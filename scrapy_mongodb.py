@@ -160,6 +160,16 @@ class MongoDBPipeline(BaseItemExporter):
             if not not_set(self.settings[setting]):
                 self.config[key] = self.settings[setting]
 
+        self.config['debug_log'] = self.settings.getbool('debug_log')
+
+        if isinstance(self.config['verify_ssl'], str):
+            if self.config['verify_ssl'] == 'ssl.CERT_NONE':
+                self.config['verify_ssl'] = ssl.CERT_NONE
+            if self.config['verify_ssl'] == 'ssl.CERT_OPTIONAL':
+                self.config['verify_ssl'] = ssl.CERT_OPTIONAL
+            if self.config['verify_ssl'] == 'ssl.CERT_REQUIRED':
+                self.config['verify_ssl'] = ssl.CERT_REQUIRED
+
         # Check for illegal configuration
         if self.config['buffer'] and self.config['unique_key']:
             msg = (
