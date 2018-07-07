@@ -288,10 +288,11 @@ class MongoDBPipeline(BaseItemExporter):
             collection = self.database[collection_name]
             self.collections[collection_name] = collection
 
-        # Ensure unique index
-        if self.config['unique_key']:
-            collection.ensure_index(self.config['unique_key'], unique=True)
-            if self.config['debug_log']:
-                self.logger.info(u'Ensuring index for key {0}'.format(
-                    self.config['unique_key']))
+            # Ensure unique index
+            if self.config['unique_key'] and self.config['unique_key'] != '_id':
+                collection.ensure_index(self.config['unique_key'], unique=True)
+                if self.config['debug_log']:
+                    self.logger.info(u'Ensuring index for key {0}'.format(
+                        self.config['unique_key']))
+
         return (collection_name, collection)
