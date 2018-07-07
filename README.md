@@ -96,6 +96,7 @@ MONGODB_SEPARATE_COLLECTIONS = True
 | `MONGODB_REPLICA_SET_W` | 0 | No | Best described in the [pymongo docs][2]. Write operations will block until they have been replicated to the specified number or tagged set of servers. `w=<int>` always includes the replica set primary (e.g. `w=3` means write to the primary and wait until replicated to two secondaries). Passing `w=0` disables write acknowledgement and all other write concern options.
 | `MONGODB_STOP_ON_DUPLICATE` | 0 | No | Set this to a value greater than 0 to close the spider when that number of duplicated insertions in MongoDB are detected. If set to 0, this option has no effect. |
 | `MONGODB_VERIFY_SSL` | None | No | Specifies whether to validate certificate for connection. None, ssl.CERT_NONE, ssl.CERT_REQUIRED, or ssl.CERT_OPTIONAL |
+| `MONGODB_DEBUG_LOG` | True | No | Generate log (security warning : connection string will be shown in log) |
 
 
 

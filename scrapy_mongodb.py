@@ -39,7 +39,8 @@ class MongoDBPipeline(BaseItemExporter):
         'buffer': None,
         'append_timestamp': False,
         'stop_on_duplicate': 0,
-        'verify_ssl': None
+        'verify_ssl': None,
+        'debug_log': True
     }
 
     # Item buffer
@@ -87,9 +88,10 @@ class MongoDBPipeline(BaseItemExporter):
         self.database = connection[self.config['database']]
         self.collections = {}
 
-        self.logger.info(u'Connected to MongoDB {0}, using "{1}"'.format(
-            self.config['uri'],
-            self.config['database']))
+        if self.config['debug_log']:
+            self.logger.info(u'Connected to MongoDB {0}, using "{1}"'.format(
+                self.config['uri'],
+                self.config['database']))
 
         # Get the duplicate on key option
         if self.config['stop_on_duplicate']:
@@ -150,7 +152,8 @@ class MongoDBPipeline(BaseItemExporter):
             ('buffer', 'MONGODB_BUFFER_DATA'),
             ('append_timestamp', 'MONGODB_ADD_TIMESTAMP'),
             ('stop_on_duplicate', 'MONGODB_STOP_ON_DUPLICATE'),
-            ('verify_ssl', 'MONGODB_VERIFY_SSL')
+            ('verify_ssl', 'MONGODB_VERIFY_SSL'),
+            ('debug_log', 'MONGODB_DEBUG_LOG')
         ]
 
         for key, setting in options:
@@ -229,8 +232,9 @@ class MongoDBPipeline(BaseItemExporter):
         if self.config['unique_key'] is None:
             try:
                 collection.insert(item, continue_on_error=True)
-                self.logger.debug(u'Stored item(s) in MongoDB {0}/{1}'.format(
-                    self.config['database'], collection_name))
+                if self.config['debug_log']:
+                    self.logger.debug(u'Stored item(s) in MongoDB {0}/{1}'.format(
+                        self.config['database'], collection_name))
 
             except errors.DuplicateKeyError:
                 self.logger.debug(u'Duplicate key found')
@@ -253,8 +257,9 @@ class MongoDBPipeline(BaseItemExporter):
 
             collection.update(key, item, upsert=True)
 
-            self.logger.debug(u'Stored item(s) in MongoDB {0}/{1}'.format(
-                self.config['database'], collection_name))
+            if self.config['debug_log']:
+                self.logger.debug(u'Stored item(s) in MongoDB {0}/{1}'.format(
+                    self.config['database'], collection_name))
 
         return item
 
@@ -276,6 +281,7 @@ class MongoDBPipeline(BaseItemExporter):
         # Ensure unique index
         if self.config['unique_key']:
             collection.ensure_index(self.config['unique_key'], unique=True)
-            self.logger.info(u'Ensuring index for key {0}'.format(
-                self.config['unique_key']))
+            if self.config['debug_log']:
+                self.logger.info(u'Ensuring index for key {0}'.format(
+                    self.config['unique_key']))
         return (collection_name, collection)
